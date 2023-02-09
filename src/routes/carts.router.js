@@ -1,27 +1,27 @@
 import { Router } from "express";
-
-import { Cart } from "../CartManager.js";
+//import CartManager from "../dao/fileManagers/CartManager.js";
+import CartManager from "../dao/mongoManagers/CartManager.js";
 const router = Router();
-const cart = new Cart('src/cart.json'); //Creación de una instancia de la clase ProductManager
+const cartManager = new CartManager('src/cart.json'); //Creación de una instancia de la clase ProductManager
 
 //Dirección desde la que pueden obtenerse todos los productos o una cantidad limitada si se pasa la query limit
-router.post("/api/cart/", async (req, res) => {
+router.post("/", async (req, res) => {
   console.log("creando carrito");
-  const carts = await cart.newCart();
+  const carts = await cartManager.newCart();
   res.json({ carts });
 });
 
 //Dirección con parametro variable para obtener solo un producto determinado por si id
-router.get("/api/cart/:cid", async (req, res) => {
+router.get("/:cid", async (req, res) => {
   const { cid } = req.params;
-  const carts = await cart.getCartById(cid);
+  const carts = await cartManager.getCartById(cid);
   res.json({ carts });
 });
 
 //Dirección desde la que agregan productos al carrito especificado
-router.post("/api/cart/:cid/product/:pid", async (req, res) => {
+router.post("/:cid/product/:pid", async (req, res) => {
     const {cid, pid} = req.params
-    const carts = await cart.updateCart(cid,pid);
+    const carts = await cartManager.updateCart(cid,pid);
 res.json({ carts });
 });
 

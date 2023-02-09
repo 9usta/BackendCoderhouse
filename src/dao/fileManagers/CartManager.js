@@ -1,7 +1,7 @@
 import fs from "fs";
 
 // Carrito.
-export class Cart {
+export default class CartManager {
   constructor(path) {
     this.path = path;
     if (!fs.existsSync(this.path)) {

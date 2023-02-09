@@ -1,13 +1,14 @@
 import express from "express";
-import {fileURLToPath} from "url";
-import {dirname} from "path";
+import { __dirname } from './utils.js'
 import handlebars from "express-handlebars";
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import {Server} from "socket.io";
-const __dirname = dirname(fileURLToPath(import.meta.url))
+import './dbConfig.js'
+
 const app = express();
 const PORT = 8080;
+
 const httpServer = app.listen(PORT, () => {
   console.log(`Escuchando al puerto ${PORT}`);
 });
@@ -22,9 +23,29 @@ app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 
-app.use(productsRouter);
-app.use(cartsRouter);
+app.use('/products',productsRouter);
+app.use('/cart',cartsRouter);
+
+app.get("/chat", (req, res) => {
+  res.render("chat");
+});
+const mensajes = [];
+
 
 socketServer.on("connection", (socket) => {
   console.log("New client connected",socket.id);
+
+  socket.on("disconnect", () => {
+    console.log(`Cliente desconectado, id: ${socket.id}`);
+  });
+
+  socket.on("nuevo ingreso", (user) => {
+    socket.broadcast.emit("nuevo ingreso", user);
+  });
+
+  socket.on("mensaje", (msj) => {
+    mensajes.push(msj);
+    socketServer.emit("mensaje", mensajes);
+  });
 });
+
