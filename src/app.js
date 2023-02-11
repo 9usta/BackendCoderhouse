@@ -5,6 +5,8 @@ import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import {Server} from "socket.io";
 import './dbConfig.js'
+import messagesRouter from "./routes/messages.router.js";
+import { MessageManager } from "./dao/mongoManagers/MessageManager.js";
 
 const app = express();
 const PORT = 8080;
@@ -25,27 +27,31 @@ app.set("view engine", "handlebars");
 
 app.use('/products',productsRouter);
 app.use('/cart',cartsRouter);
+app.use("/messages", messagesRouter);
+const messageManager = new MessageManager();
 
-app.get("/chat", (req, res) => {
-  res.render("chat");
-});
-const mensajes = [];
-
-
-socketServer.on("connection", (socket) => {
-  console.log("New client connected",socket.id);
-
+socketServer.on("connection", async (socket) => {
+  console.log(`Cliente conectado. ID: ${socket.id}`);
+  socket.emit("bienvenida", {
+    message: "Conectado al servidor",
+  });
+  
   socket.on("disconnect", () => {
-    console.log(`Cliente desconectado, id: ${socket.id}`);
+    console.log(`Cliente desconectado. ID: ${socket.id}`);
   });
 
-  socket.on("nuevo ingreso", (user) => {
-    socket.broadcast.emit("nuevo ingreso", user);
+  socket.on("nuevoIngreso", async (user) => {
+    socket.broadcast.emit("nuevoIngreso", user);
+    socket.emit("chat", await messageManager.getMessages());
   });
 
-  socket.on("mensaje", (msj) => {
-    mensajes.push(msj);
-    socketServer.emit("mensaje", mensajes);
+  socket.on("chat", async (msjObj) => {
+    const newMessages = await messageManager.savedMessages(msjObj);
+    socketServer.emit("chat", newMessages);
+  });
+
+  socket.on("clean", async (obj) => {
+    const newMessages = await messageManager.cleanHisotry();
+    socketServer.emit("chat", newMessages);
   });
 });
-

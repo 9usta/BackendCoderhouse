@@ -3,14 +3,16 @@
   type="text/css"
   href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
 />
-<h2>Bienvenido al chat</h2>
-
-<form id="form">
-  <input type="text" name="usuario" id="usuario" placeholder="Email" />
-  <input type="text" name="mensaje" id="mensaje" placeholder="Mensaje"/>
-  <input type="submit" value="Enviar" />
-</form>
-<div id="historial"></div>
+<h2>Creacion de un chat con Websocket</h2>
+<div class="panel">
+  <div id="chatHistory"></div>
+  <form id="form">
+    {{! <input type="text" name="mensaje" id="mensaje" /> }}
+    <textarea name="" id="mensaje" cols="30" rows="2"></textarea>
+    <input type="submit" id="button" value="Enviar" />
+  </form>
+</div>
+<button id="cleanHistory">Borrar historial</button>
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script

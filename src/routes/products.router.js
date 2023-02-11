@@ -10,49 +10,36 @@ const productManager = new ProductManager("src/products.json"); //Creación de u
 router.get("/", async (req, res) => {
   const { limit } = req.query;
   const products = await productManager.getProducts(limit || "all");
-  res.render("index", { products });
+  res.json({ products });
 });
 
-//Dirección que muestra todos los productos real time
-router.get("/realTimeProducts", async (req, res) => {
-  const { limit } = req.query;
-  const products = await productManager.getProducts(limit || "all");
-
-  socketServer.on("connection", () => {
-    socketServer.emit("products", products);
-  });
-  res.render("realTimeProducts", {});
-});
 //Dirección con parametro variable para obtener solo un producto determinado por si id
 router.get("/:pid", async (req, res) => {
   const { pid } = req.params;
   const product = await productManager.getProductById(pid);
-  res.send(product);
+  res.json(product);
 });
 
 //Dirección para agregar un nuevo producto
 router.post("/", async (req, res) => {
   const productObj = req.body;
-  const products = await productManager.addProduct(productObj);
-  socketServer.emit("products", products);
-  res.render("realTimeProducts", {});
+  const product = await productManager.addProduct(productObj);
+  res.json({ message: "Producto cargado con éxito", product });
 });
 
 //Dirección para modificar producto
 router.put("/:pid", async (req, res) => {
   const { pid } = req.params;
   const newData = req.body;
-  const products = await productManager.updateProduct(pid, newData);
-  socketServer.emit("products", products);
-  res.render("realTimeProducts", {});
+  const product = await productManager.updateProduct(pid, newData);
+  res.json({message: "Producto modificado con éxito", product});
 });
 
 //Dirección para eliminar un producto
 router.delete("/:pid", async (req, res) => {
   const { pid } = req.params;
   const products = await productManager.deleteProduct(pid);
-  socketServer.emit("products", products);
-  res.render("realTimeProducts", {});
+  res.json({ message: "producto eliminado con éxito", id });
 });
 
 export default router;
