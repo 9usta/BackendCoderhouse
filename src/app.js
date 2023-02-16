@@ -2,7 +2,9 @@ import express from "express";
 import { __dirname } from './utils.js'
 import handlebars from "express-handlebars";
 import productsRouter from "./routes/products.router.js";
+import productsViewRouter from  "./routes/productsView.router.js";
 import cartsRouter from "./routes/carts.router.js";
+import cartsViewRouter from "./routes/cartsView.router.js";
 import {Server} from "socket.io";
 import './dbConfig.js'
 import messagesRouter from "./routes/messages.router.js";
@@ -25,9 +27,11 @@ app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 
-app.use('/products',productsRouter);
-app.use('/cart',cartsRouter);
+app.use('/api/products',productsRouter);
+app.use('/api/cart',cartsRouter);
 app.use("/messages", messagesRouter);
+app.use('/products',productsViewRouter);
+app.use('/cart',cartsViewRouter);
 const messageManager = new MessageManager();
 
 socketServer.on("connection", async (socket) => {
