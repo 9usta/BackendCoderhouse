@@ -3,22 +3,30 @@ import { productsModel } from '../models/products.model.js'
 const url ="http://localhost:8080/api/products/?";
 
 export default class ProductsManager {
-  async getProducts(query, limit = 10, page = 1, sort) {
+  async getProducts(query, limit, page, sort) {
     try {
-      let result ={}
+      let param ={}
+      if (sort){ param={
+        limit: parseInt(limit),
+        page: parseInt(page),
+        sort: {price: sort},
+        lean: true,
+      }}
+      else{param={
+        limit: parseInt(limit),
+        page: parseInt(page),
+        lean: true,
+      }}
+      let q = {};
       if (query){
-      result = await productsModel.paginate({"category":query}, {
-        limit: limit,
-        page: page,
-        sort: {price: sort},
-        lean: true,
-      });}
-      else{      result = await productsModel.paginate({}, {
-        limit: limit,
-        page: page,
-        sort: {price: sort},
-        lean: true,
-      });}
+        const i = query.indexOf(":");
+        const f = query.length;
+        const key = query.substring(0, i);
+        const value = query.substring(i + 1, f);
+        q[key] = value;}
+
+      const result = await productsModel.paginate(q, param);
+    
       if (result.hasNextPage)
         result.nextLink = `${url}${
           query ? "query=" + query + "&" : ""
@@ -31,6 +39,7 @@ export default class ProductsManager {
         }${"limit=" + limit}${"&page=" + (+page - 1)}${
           sort ? "&sort=" + sort : ""
         }`;
+        console.log(result);
       return {
         status: "success",
         payload: result.docs,
@@ -47,7 +56,7 @@ export default class ProductsManager {
         nextLink: result.nextLink,
       }
     } catch (error) {
-      console.log(error);
+      console.log("error");
     }
     };  
 

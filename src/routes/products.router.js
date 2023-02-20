@@ -9,50 +9,20 @@ const productManager = new ProductManager("src/products.json"); //Creación de u
 
 //Dirección que muestra todos los productos No real time
 router.get("/", async (req, res) => {
-  const {query, limit, page, sort} = req.query;
-  const result = await productManager.getProducts(query, limit, page, sort);
-  console.log(result);
- res.json(result);
+  try {
+    const {query, limit = 10, page = 1, sort} = req.query;
+    const result = await productManager.getProducts(query, limit, page, sort);
+    console.log(result);
+   res.json(result);
+  } catch (error) {
+    console.log("error");
+  }
+
+
+
 
 });
 
-
-router.get("/", async (req, res) => {
-  const page = parseInt(req.query.page)|| 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const query = (req.query.query);
-  let sort = parseInt(req.query.sort)
-    if (sort) {
-      sort = sort === "asc" ?  1  : -1 ;
-    }
-   if (query){
-    const {docs,hasPrevPage,hasNextPage,nextPage,prevPage} =
-  await productsModel.paginate({category:query}, { limit , page, sort: {price: sort}, lean:true});
-  const products =docs;
-  console.log(products);
-  res.render('products',{
-    products,limit,query,
-      hasPrevPage,
-      hasNextPage,
-      prevPage,
-      nextPage
-  });
-  }else{
-    const {docs,hasPrevPage,hasNextPage,nextPage,prevPage} =
-    await productsModel.paginate({}, { limit , page, sort: {price: sort}, lean:true});
-    const products =docs;
-    console.log(products);
-  res.json({
-    products,limit,query,sort,
-      hasPrevPage,
-      hasNextPage,
-      prevPage,
-      nextPage
-  });
-  }
-
-  
-})
 
 //Dirección con parametro variable para obtener solo un producto determinado por si id
 router.get("/:pid", async (req, res) => {

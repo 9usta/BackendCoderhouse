@@ -7,10 +7,11 @@ const cartManager = new CartManager();
 
 
 router.get("/:cid", async (req, res) => {
-  const id = req.params.cid;
-  const cart = await cartManager.getCartById(id);
+  const {cid} = req.params;
+  const cart = await cartManager.getCartById(cid);
   console.log(cart);
- res.render("cart", cart);
+  
+ res.render("cart", {cart});
 });
 
 export default router;

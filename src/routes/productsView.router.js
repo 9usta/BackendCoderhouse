@@ -6,7 +6,7 @@ const productManager = new ProductManager();
 const url ="http://localhost:8080/products/?";
 
 router.get("/", async (req, res) => {
-  const {query, limit, page, sort} = req.query;
+  const {query, limit = 10, page = 1, sort} = req.query;
   const response = await productManager.getProducts(query, limit, page, sort);
   console.log(response);
   let {
@@ -15,7 +15,8 @@ router.get("/", async (req, res) => {
     hasPrevPage,
     nextLink,
     prevLink,
-    page: resPage,
+    page:resPage,
+    totalPages
   } = response;
   
   if (hasNextPage)
@@ -30,6 +31,10 @@ router.get("/", async (req, res) => {
     }${"limit=" + limit}${"&page=" + (+page - 1)}${
       sort ? "&sort=" + sort : ""
     }`;
+if(resPage >totalPages){
+  res.render("products", {
+    payload:false})}
+else{
   res.render("products", {
     payload,
     hasNextPage,
@@ -37,6 +42,8 @@ router.get("/", async (req, res) => {
     nextLink,
     prevLink,
     resPage,
+    totalPages
   });
+};
 });
 export default router;

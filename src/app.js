@@ -1,6 +1,8 @@
 import express from "express";
 import { __dirname } from './utils.js'
 import handlebars from "express-handlebars";
+import Handlebars from "handlebars";
+import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access";
 import productsRouter from "./routes/products.router.js";
 import productsViewRouter from  "./routes/productsView.router.js";
 import cartsRouter from "./routes/carts.router.js";
@@ -23,7 +25,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
 
-app.engine("handlebars", handlebars.engine());
+app.engine(
+  "handlebars",
+  handlebars.engine({
+    defaulyLayout: "main",
+    handlebars: allowInsecurePrototypeAccess(Handlebars),
+  })
+);
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 

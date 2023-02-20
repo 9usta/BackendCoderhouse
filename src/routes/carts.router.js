@@ -7,17 +7,6 @@ const cartManager = new CartManager(); //Instancia de la clase para gestionar el
 
 const router = Router();
 
-//Funcion para verificar que exista el producto. Luego la paso como middleware al metodo POST
-async function productExists(req, res, next) {
-  try {
-    const { pid } = req.params;
-    await productManager.getProductById(pid);
-    next();
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 //Rutas
 router.post("/", async (req, res) => {
   try {
@@ -44,14 +33,12 @@ router.get("/:cid", async (req, res) => {
 });
 
 //Aqui implemento el middleware que, de existir el producto, permite continuar. De lo contario devuelveerror.
-router.post(
-  "/:cid/product/:pid",
-  /* productExists, */ async (req, res) => {
-    try {
-      const { cid, pid } = req.params;
-      const cart = await cartManager.addProductToCart(cid, pid);
-      res.status(200).json({ message: "Producto agregado con éxito", cart });
-    } catch (error) {
+router.post("/:cid/product/:pid", async (req, res) => {
+  try {
+    const { cid, pid } = req.params;
+    const cart = await cartManager.addProductToCart(cid, pid);
+    res.json({ message: "Producto agregado con éxito", cart }); 
+  } catch (error) {
       console.log(error)
     }
   }
@@ -67,7 +54,7 @@ router.put("/:cid", async (req, res) => {
   });
 });
 
-router.put("/:cid/products/:pid", async (req, res) => {
+router.put("/:cid/product/:pid", async (req, res) => {
   const { cid, pid } = req.params;
   const quantity = req.body.quantity;
   const cart = await cartManager.updateProductInCart(cid, pid, quantity);

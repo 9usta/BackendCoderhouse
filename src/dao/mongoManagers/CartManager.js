@@ -20,6 +20,7 @@ export default class CartManager {
       console.log(error)
     }
   }
+  
   async addProductToCart(cid, pid) {
     try {
       const cart = await cartModel.findById(cid);
