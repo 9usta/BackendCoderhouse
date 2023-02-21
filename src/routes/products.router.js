@@ -10,19 +10,14 @@ const productManager = new ProductManager("src/products.json"); //Creación de u
 //Dirección que muestra todos los productos No real time
 router.get("/", async (req, res) => {
   try {
-    const {query, limit = 10, page = 1, sort} = req.query;
+    const { query, limit = 10, page = 1, sort } = req.query;
     const result = await productManager.getProducts(query, limit, page, sort);
     console.log(result);
-   res.json(result);
+    res.json(result);
   } catch (error) {
     console.log("error");
   }
-
-
-
-
 });
-
 
 //Dirección con parametro variable para obtener solo un producto determinado por si id
 router.get("/:pid", async (req, res) => {
@@ -43,7 +38,7 @@ router.put("/:pid", async (req, res) => {
   const { pid } = req.params;
   const newData = req.body;
   const product = await productManager.updateProduct(pid, newData);
-  res.json({message: "Producto modificado con éxito", product});
+  res.json({ message: "Producto modificado con éxito", product });
 });
 
 //Dirección para eliminar un producto

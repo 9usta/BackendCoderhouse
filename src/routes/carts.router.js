@@ -1,4 +1,4 @@
-import {Router} from "express";
+import { Router } from "express";
 import CartManager from "../dao/mongoManagers/CartManager.js";
 import ProductManager from "../dao/mongoManagers/ProductManager.js";
 
@@ -14,9 +14,9 @@ router.post("/", async (req, res) => {
     res
       .status(200)
       .json({ message: "Nuevo carrito generado con éxito", cart: newCart });
-    } catch (error) {
-      console.log(error)
-    }
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 router.get("/:cid", async (req, res) => {
@@ -28,7 +28,7 @@ router.get("/:cid", async (req, res) => {
       cart,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 });
 
@@ -37,12 +37,11 @@ router.post("/:cid/product/:pid", async (req, res) => {
   try {
     const { cid, pid } = req.params;
     const cart = await cartManager.addProductToCart(cid, pid);
-    res.json({ message: "Producto agregado con éxito", cart }); 
+    res.json({ message: "Producto agregado con éxito", cart });
   } catch (error) {
-      console.log(error)
-    }
+    console.log(error);
   }
-);
+});
 
 router.put("/:cid", async (req, res) => {
   const { cid } = req.params;

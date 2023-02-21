@@ -6,7 +6,7 @@ export default class CartManager {
       const cart = await cartModel.create({ products: [] });
       return cart;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
   async getCartById(cid) {
@@ -17,10 +17,10 @@ export default class CartManager {
       });
       return cart;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
-  
+
   async addProductToCart(cid, pid) {
     try {
       const cart = await cartModel.findById(cid);
@@ -38,7 +38,7 @@ export default class CartManager {
       cart.save();
       return cart;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
   async updateCart(cid, newProducts) {

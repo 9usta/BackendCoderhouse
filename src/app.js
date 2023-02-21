@@ -1,18 +1,26 @@
 import express from "express";
-import { __dirname } from './utils.js'
+import { __dirname } from "./utils.js";
 import handlebars from "express-handlebars";
 import Handlebars from "handlebars";
 import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access";
 import productsRouter from "./routes/products.router.js";
-import productsViewRouter from  "./routes/productsView.router.js";
+import productsViewRouter from "./routes/productsView.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import cartsViewRouter from "./routes/cartsView.router.js";
-import {Server} from "socket.io";
-import './dbConfig.js'
+import { Server } from "socket.io";
+import "./dbConfig.js";
 import messagesRouter from "./routes/messages.router.js";
 import { MessageManager } from "./dao/mongoManagers/MessageManager.js";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import FileStore from "session-file-store";
+import MongoStore from "connect-mongo";
+import sessionRouter from "./routes/session.router.js";
+import sessionViewRouter from "./routes/sessionView.router.js";
 
 const app = express();
+const FileStorage = FileStore(session);
+
 const PORT = 8080;
 
 const httpServer = app.listen(PORT, () => {
@@ -21,9 +29,23 @@ const httpServer = app.listen(PORT, () => {
 
 export const socketServer = new Server(httpServer);
 
+app.use(cookieParser());
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
+app.use(
+  session({
+    store: MongoStore.create({
+      mongoUrl:
+        "mongodb+srv://Gustavo:GustavoGustavo@cluster0.5voxicw.mongodb.net/ecommerce?retryWrites=true&w=majority",
+      mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+      ttl: 60 * 60,
+    }),
+    secret: "secretCode",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 app.engine(
   "handlebars",
@@ -35,11 +57,13 @@ app.engine(
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 
-app.use('/api/products',productsRouter);
-app.use('/api/cart',cartsRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/cart", cartsRouter);
+app.use("/api/session", sessionRouter);
 app.use("/messages", messagesRouter);
-app.use('/products',productsViewRouter);
-app.use('/cart',cartsViewRouter);
+app.use("/products", productsViewRouter);
+app.use("/cart", cartsViewRouter);
+app.use("/session", sessionViewRouter);
 const messageManager = new MessageManager();
 
 socketServer.on("connection", async (socket) => {
@@ -47,7 +71,7 @@ socketServer.on("connection", async (socket) => {
   socket.emit("bienvenida", {
     message: "Conectado al servidor",
   });
-  
+
   socket.on("disconnect", () => {
     console.log(`Cliente desconectado. ID: ${socket.id}`);
   });

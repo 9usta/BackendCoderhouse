@@ -1,4 +1,10 @@
 <div>
+  {{#if isLogin}}
+  <h3>Bienvenido {{user.role}}:{{user.firstName}} {{user.lastName}}</h3>
+  {{/if}}
+  <div>
+  <button style="position: absolute;top: 20px;right: 20px;" onclick={logout()}>Logout</button>
+  </div>
   <h1>Products</h1>
   <a href="/cart/63f12e9a3dcd14466d2d0ed7">Ver Carrito<a></a>
 </div>

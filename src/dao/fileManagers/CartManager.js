@@ -38,9 +38,10 @@ export default class CartManager {
     const carts = await this.#reedCart();
     const cart = carts.find((cart) => cart.id === parseInt(cid));
 
-
-      if (cart){
-        const productsInCart = cart.products.find((prod) => prod.product === parseInt(pid));
+    if (cart) {
+      const productsInCart = cart.products.find(
+        (prod) => prod.product === parseInt(pid)
+      );
       if (productsInCart) {
         productsInCart.quantity++;
       } else {
@@ -49,7 +50,7 @@ export default class CartManager {
       await this.#writeCart(carts);
       console.log(`prudcto ${pid} agregado correctamente al carrito ${cid}`);
       return `prudcto ${pid} agregado correctamente al carrito ${cid}`;
-    }else {
+    } else {
       console.log(`No existe un carrito con el id: ${cid}`);
       return `No existe un carritocon el id: ${cid}`;
     }
