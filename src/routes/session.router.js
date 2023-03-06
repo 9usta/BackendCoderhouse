@@ -1,76 +1,54 @@
 import { Router } from "express";
 import userModel from "../dao/models/users.model.js";
+import passport from "passport";
+import { createHash, isValidPassword } from "../utils.js";
 
 const router = Router();
 
-router.post("/register", async (req, res) => {
-  try {
-    const { firstName, lastName, email, password } = req.body;
-    if (!firstName || !lastName || !email || !password)
-      return res
-        .status(400)
-        .send({ status: 400, error: "Complete todos los campos" });
-    const exist = await userModel.findOne({ email });
-    if (exist)
-      return res
-        .status(400)
-        .send({ status: 400, error: "El correo ya esta registrado" });
-    const result = await userModel.create({
-      firstName,
-      lastName,
-      email,
-      password,
-      role: "usuario",
-    });
-
-    return res.send({ status: "success", payload: result });
-  } catch (error) {
-    console.log(error);
-    return res.send({ status: 500, error: "Error de registro" });
+router.post(
+  "/register",
+  passport.authenticate("register", {failureRedirect: "failregister"}),
+  async (req, res) => {
+    return res.send({status: "success", message: "User registered"});
   }
-});
+);
 
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (email == "adminCoder@coder.com" && password == "adminCod3r123") {
+router.get('/failregister', async (req, res) => {
+  console.log("Fallo la estrategia");
+  res.send({ status: 500, error: "Fallo registro" })
+})
+
+router.post('/login', passport.authenticate('login', { failureRedirect: '/faillogin' }), async (req, res) => {
+  const { email, password } = req.body;
+
+  if (email == "adminCoder@coder.com" && password == "adminCod3r123") {
       req.session.user = {
-        firstName: "Admin",
-        lastName: "Coder",
-        email: email,
-        role: "admin",
+          id: "adminCoder",
+          first_name: "Coder",
+          last_name: "Admin",
+          email: email,
+          rol: "admin",
       };
-      return res.send({
-        status: "success",
-        message: "Has iniciado sesion satisfactoriamente",
-      });
-    }
-    if (!email || !password)
-      return res
-        .status(400)
-        .send({ status: 400, error: "Complete todos los campos" });
-    const user = await userModel.findOne({ email, password });
-    if (!user)
-      return res
-        .status(400)
-        .send({ status: 400, error: "datos incorrectos" });
-
-    req.session.user = {
-      id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      role: "usuario",
-    };
-
-    return res.send({
-      status: "success",
-      message: "Has iniciado sesion satisfactoriamente",
-    });
-  } catch (error) {
-    res.send({ status: 500, error: "Error de login" });
+      return res.send({ status: "success", message: "logueado" });
   }
-});
+
+  if (!req.user) return res.status(400).send({ status: "error", error: "Contraseña invalida" });
+
+  req.session.user = {
+      first_name: req.user.first_name,
+      last_name: req.user.last_name,
+      age: req.user.age,
+      email: req.user.email,
+      rol: "usuario"
+  }
+
+  res.send({ status: "success", payload: req.user });
+})
+
+router.get('/faillogin', async (req, res) => {
+  console.log("Fallo la estrategia");
+  res.status(500).send({ error: "Failed" })
+})
 
 router.post("/logout", async (req, res) => {
   req.session.destroy((err) => {
@@ -83,5 +61,13 @@ router.post("/logout", async (req, res) => {
     }
   });
 });
+
+router.get('/github',passport.authenticate('github',{scope:['user:email']},async(req,res)=>{}))
+
+
+router.get('/githubcallback',passport.authenticate('github', {failureRedirect:'/login'}),async(req,res)=>{
+  req.session.user =req.user,
+  res.redirect('/products');
+})
 
 export default router;

@@ -17,6 +17,8 @@ import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import sessionRouter from "./routes/session.router.js";
 import sessionViewRouter from "./routes/sessionView.router.js";
+import passport from "passport";
+import initPassport from "./config/passport.config.js";
 
 const app = express();
 const FileStorage = FileStore(session);
@@ -47,6 +49,14 @@ app.use(
   })
 );
 
+initPassport();
+
+app.use(
+    passport.session({
+      secret: "secretCoder",
+    })
+  );
+  app.use(passport.initialize());
 app.engine(
   "handlebars",
   handlebars.engine({
