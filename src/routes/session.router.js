@@ -18,7 +18,7 @@ router.get('/failregister', async (req, res) => {
   res.send({ status: 500, error: "Fallo registro" })
 })
 
-router.post('/login', passport.authenticate('login', { failureRedirect: '/faillogin' }), async (req, res) => {
+router.post('/login', passport.authenticate('login', { failureRedirect: 'faillogin' }), async (req, res) => {
   const { email, password } = req.body;
 
   if (email == "adminCoder@coder.com" && password == "adminCod3r123") {
@@ -29,10 +29,10 @@ router.post('/login', passport.authenticate('login', { failureRedirect: '/faillo
           email: email,
           rol: "admin",
       };
-      return res.send({ status: "success", message: "logueado" });
+      return res.send({ status: "success", message: "Bienvenido" });
   }
 
-  if (!req.user) return res.status(400).send({ status: "error", error: "Contraseña invalida" });
+  if (!req.user) return res.status(400).send({ status: "error", message: "Contraseña invalida" });
 
   req.session.user = {
       first_name: req.user.first_name,
@@ -46,8 +46,8 @@ router.post('/login', passport.authenticate('login', { failureRedirect: '/faillo
 })
 
 router.get('/faillogin', async (req, res) => {
-  console.log("Fallo la estrategia");
-  res.status(500).send({ error: "Failed" })
+  console.log("Fail login");
+  res.status(500).send({ error: "Datos incorrectos" })
 })
 
 router.post("/logout", async (req, res) => {
