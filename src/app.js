@@ -52,11 +52,11 @@ app.use(
 initPassport();
 
 app.use(
-    passport.session({
-      secret: "secretCoder",
-    })
-  );
-  app.use(passport.initialize());
+  passport.session({
+    secret: "secretCoder",
+  })
+);
+app.use(passport.initialize());
 app.engine(
   "handlebars",
   handlebars.engine({

@@ -18,15 +18,13 @@ async function addToCart(id) {
 }
 
 async function logout() {
-  const response = await fetch(
-    `http://localhost:8080/api/session/logout`,
-    {
-      method: "POST",
-      body: "",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const response = await fetch(`http://localhost:8080/api/session/logout`, {
+    method: "POST",
+    body: "",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   const res = await response.json();
   console.log(res);
   location.assign("/session/login");
