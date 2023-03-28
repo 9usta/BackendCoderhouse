@@ -1,45 +1,29 @@
-import { productsModel } from "../models/products.model.js";
+import productsModel from "../models/products.model.js";
 
-const url = "http://localhost:8080/api/products/?";
+export default class ProductManager {
+  constructor() {}
 
-export default class ProductsManager {
-  async getProducts(query, limit, page, sort) {
+  async getAll(query, limit = 10, page = 1, sort) {
     try {
-      let param = {};
-      if (sort) {
-        param = {
-          limit: parseInt(limit),
-          page: parseInt(page),
-          sort: { price: sort },
-          lean: true,
-        };
-      } else {
-        param = {
-          limit: parseInt(limit),
-          page: parseInt(page),
-          lean: true,
-        };
-      }
-      let q = {};
-      if (query) {
-        const i = query.indexOf(":");
-        const f = query.length;
-        const key = query.substring(0, i);
-        const value = query.substring(i + 1, f);
-        q[key] = value;
-      }
-
-      const result = await productsModel.paginate(q, param);
-
+      if (query) query = JSON.parse(query);
+      const result = await productsModel.paginate(query, {
+        limit: limit,
+        page: page,
+        sort: {price: sort},
+        lean: true,
+      });
       if (result.hasNextPage)
-        result.nextLink = `${url}${query ? "query=" + query + "&" : ""}${
-          "limit=" + limit
-        }${"&page=" + (+page + 1)}${sort ? "&sort=" + sort : ""}`;
+        result.nextLink = `http://localhost:8080/api/products/?${
+          query ? "query=" + query + "&" : ""
+        }${"limit=" + limit}${"&page=" + (+page + 1)}${
+          sort ? "&sort=" + sort : ""
+        }`;
       if (result.hasPrevPage)
-        result.prevLink = `${url}${query ? "query=" + query + "&" : ""}${
-          "limit=" + limit
-        }${"&page=" + (+page - 1)}${sort ? "&sort=" + sort : ""}`;
-      console.log(result);
+        result.prevLink = `http://localhost:8080/api/products/?${
+          query ? "query=" + query + "&" : ""
+        }${"limit=" + limit}${"&page=" + (+page - 1)}${
+          sort ? "&sort=" + sort : ""
+        }`;
       return {
         status: "success",
         payload: result.docs,
@@ -56,45 +40,75 @@ export default class ProductsManager {
         nextLink: result.nextLink,
       };
     } catch (error) {
-      console.log("error");
+      return {
+        status: 500,
+        error:
+          "An error has occurred at moment of read the database, this error is from server and we're working on resolve the problem.",
+      };
     }
   }
 
-  async addProduct(productObj) {
+  async post(product) {
     try {
-      const products = await productsModel.create(productObj);
-      return products;
+      return await productsModel.create(product);
     } catch (error) {
-      console.log(error);
+      return {
+        status: 500,
+        error: "An error occurred while creating the product",
+      };
     }
   }
 
-  async getProductById(id) {
+  async getById(id) {
     try {
-      const searchedProduct = await productsModel.findById(id);
-      return searchedProduct;
+      const product = await productsModel.findById(id);
+      return product === null
+        ? {
+            status: 404,
+            error: `Product with id ${id} not found`,
+          }
+        : product;
     } catch (error) {
-      console.log(error);
+      return {
+        status: 500,
+        error: `An error occurred while obtaining the product with id ${id}`,
+      };
     }
   }
 
-  async updateProduct(pid, newData) {
+  async putById(id, object) {
     try {
-      const product = await productsModel.findByIdAndUpdate(pid, newData, {
+      const productUpdated = await productsModel.findByIdAndUpdate(id, object, {
         new: true,
       });
-      return product;
+      return productUpdated === null
+        ? {
+            status: 404,
+            error: `Product with id ${id} not found`,
+          }
+        : productUpdated;
     } catch (error) {
-      console.log(error);
+      return {
+        status: 500,
+        error: `An error occurred while updating the product with id ${id}`,
+      };
     }
   }
 
-  async deleteProduct(pid) {
+  async deleteById(id) {
     try {
-      const product = await productsModel.findByIdAndDelete(pid);
-      return product;
+      const productDeleted = await productsModel.findByIdAndDelete(id);
+      return productDeleted === null
+        ? {
+            status: 404,
+            error: `Product with id ${id} not found`,
+          }
+        : {status: 200, message: `Product with ${id} deleted succesfully`};
     } catch (error) {
-      console.log(error);
+      return {
+        status: 500,
+        error: `An error occurred while updating the product with id ${id}`,
+      };
     }
   }
 }

@@ -19,11 +19,12 @@ import sessionRouter from "./routes/session.router.js";
 import sessionViewRouter from "./routes/sessionView.router.js";
 import passport from "passport";
 import initPassport from "./config/passport.config.js";
+import config from "./config/config.js";
 
 const app = express();
 const FileStorage = FileStore(session);
 
-const PORT = 8080;
+const PORT = config.port;
 
 const httpServer = app.listen(PORT, () => {
   console.log(`Escuchando al puerto ${PORT}`);
@@ -39,7 +40,7 @@ app.use(
   session({
     store: MongoStore.create({
       mongoUrl:
-        "mongodb+srv://Gustavo:GustavoGustavo@cluster0.5voxicw.mongodb.net/ecommerce?retryWrites=true&w=majority",
+      config.mongoUrl,
       mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
       ttl: 60 * 60,
     }),
