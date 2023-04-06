@@ -20,6 +20,7 @@ import sessionViewRouter from "./routes/sessionView.router.js";
 import passport from "passport";
 import initPassport from "./config/passport.config.js";
 import config from "./config/config.js";
+import { connection } from './dao/factory.js';
 
 const app = express();
 const FileStorage = FileStore(session);
