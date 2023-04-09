@@ -1,9 +1,7 @@
-import CartManager from "../dao/mongoManagers/CartManager.js";
-
-const cartM = new CartManager();
+import {CartsService} from "../dao/repositories/index.js";
 
 export const getAll = async (req, res) => {
-  const getResponse = await cartM.getCarts();
+  const getResponse = await CartsService.getAll();
 
   return !getResponse.error
     ? res.send(getResponse)
@@ -12,7 +10,7 @@ export const getAll = async (req, res) => {
 
 export const getById = async (req, res) => {
   const id = req.params.cid;
-  const getResponse = await cartM.getCartById(id);
+  const getResponse = await CartsService.getById(id);
 
   return !getResponse.error
     ? res.send(getResponse)
@@ -20,7 +18,7 @@ export const getById = async (req, res) => {
 };
 
 export const post = async (req, res) => {
-  const postResponse = await cartM.post();
+  const postResponse = await CartsService.post();
 
   return !postResponse.error
     ? res.send(postResponse)
@@ -29,7 +27,7 @@ export const post = async (req, res) => {
 
 export const postProductToCart = async (req, res) => {
   const {cid, pid} = req.params;
-  const postResponse = await cartM.postProductToCart(cid, pid);
+  const postResponse = await CartsService.postProductToCart(cid, pid);
 
   return !postResponse.error
     ? res.send(postResponse)
@@ -39,7 +37,7 @@ export const postProductToCart = async (req, res) => {
 export const putProducts = async (req, res) => {
   const cid = req.params.cid;
   const products = req.body;
-  const putResponse = await cartM.putProducts(cid, products);
+  const putResponse = await CartsService.putProducts(cid, products);
 
   return !putResponse.error
     ? res.send(putResponse)
@@ -49,7 +47,7 @@ export const putProducts = async (req, res) => {
 export const putProductQuantity = async (req, res) => {
   const {cid, pid} = req.params;
   const {quantity} = req.body;
-  const putResponse = await cartM.putProductQuantity(cid, pid, quantity);
+  const putResponse = await CartsService.putProductQuantity(cid, pid, quantity);
 
   return !putResponse.error
     ? res.send(putResponse)
@@ -59,7 +57,7 @@ export const putProductQuantity = async (req, res) => {
 export const deleteProductToCart = async (req, res) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
-  const deleteResponse = await cartM.deleteProductToCart(cid, pid);
+  const deleteResponse = await CartsService.deleteProductToCart(cid, pid);
 
   return !deleteResponse.error
     ? res.send(deleteResponse)
@@ -68,7 +66,7 @@ export const deleteProductToCart = async (req, res) => {
 
 export const deleteProducts = async (req, res) => {
   const cid = req.params.cid;
-  const deleteResponse = await cartM.deleteProducts(cid);
+  const deleteResponse = await CartsService.deleteProducts(cid);
 
   return !deleteResponse.error
     ? res.send(deleteResponse)
@@ -77,9 +75,19 @@ export const deleteProducts = async (req, res) => {
 
 export const deleteById = async (req, res) => {
   const cid = req.params.cid;
-  const deleteResponse = await cartM.deleteById(cid);
+  const deleteResponse = await CartsService.deleteById(cid);
 
   return !deleteResponse.error
     ? res.send(deleteResponse)
     : res.status(deleteResponse.status).send(deleteResponse);
+};
+
+export const purchase = async (req, res) => {
+  const cid = req.params.cid;
+  const purchaser = req.user.email;
+  const purchaseResponse = await CartsService.purchase(cid, purchaser);
+
+  return !purchaseResponse.error
+    ? res.send(purchaseResponse)
+    : res.status(purchaseResponse.status).send(purchaseResponse);
 };

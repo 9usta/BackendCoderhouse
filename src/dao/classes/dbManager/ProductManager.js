@@ -1,12 +1,11 @@
-import productsModel from "../models/products.model.js";
-
+import productModel from "../../models/products.model.js";
 export default class ProductManager {
   constructor() {}
 
   async getAll(query, limit = 10, page = 1, sort) {
     try {
       if (query) query = JSON.parse(query);
-      const result = await productsModel.paginate(query, {
+      const result = await productModel.paginate(query, {
         limit: limit,
         page: page,
         sort: {price: sort},
@@ -31,7 +30,6 @@ export default class ProductManager {
         limit: result.limit,
         totalPages: result.totalPages,
         page: result.page,
-        pagingCounter: result.pagingCounter,
         hasPrevPage: result.hasPrevPage,
         hasNextPage: result.hasNextPage,
         prevPage: result.prevPage,
@@ -40,6 +38,7 @@ export default class ProductManager {
         nextLink: result.nextLink,
       };
     } catch (error) {
+      console.log(error);
       return {
         status: 500,
         error:
@@ -50,7 +49,7 @@ export default class ProductManager {
 
   async post(product) {
     try {
-      return await productsModel.create(product);
+      return await productModel.create(product);
     } catch (error) {
       return {
         status: 500,
@@ -61,7 +60,7 @@ export default class ProductManager {
 
   async getById(id) {
     try {
-      const product = await productsModel.findById(id);
+      const product = await productModel.findById(id);
       return product === null
         ? {
             status: 404,
@@ -78,7 +77,7 @@ export default class ProductManager {
 
   async putById(id, object) {
     try {
-      const productUpdated = await productsModel.findByIdAndUpdate(id, object, {
+      const productUpdated = await productModel.findByIdAndUpdate(id, object, {
         new: true,
       });
       return productUpdated === null
@@ -97,7 +96,7 @@ export default class ProductManager {
 
   async deleteById(id) {
     try {
-      const productDeleted = await productsModel.findByIdAndDelete(id);
+      const productDeleted = await productModel.findByIdAndDelete(id);
       return productDeleted === null
         ? {
             status: 404,

@@ -10,7 +10,7 @@ import cartsViewRouter from "./routes/cartsView.router.js";
 import { Server } from "socket.io";
 import "./dbConfig.js";
 import messagesRouter from "./routes/messages.router.js";
-import { MessageManager } from "./dao/mongoManagers/MessageManager.js";
+import { MessageManager } from "./dao/classes/dbManager/MessageManager.js";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import FileStore from "session-file-store";
@@ -20,7 +20,7 @@ import sessionViewRouter from "./routes/sessionView.router.js";
 import passport from "passport";
 import initPassport from "./config/passport.config.js";
 import config from "./config/config.js";
-import { connection } from './dao/factory.js';
+
 
 const app = express();
 const FileStorage = FileStore(session);

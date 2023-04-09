@@ -1,9 +1,8 @@
-import userModel from "../models/users.model.js";
-
+import userModel from "../../models/users.model.js";
 export default class UserManager {
   constructor() {}
 
-  async addUser(user) {
+  async post(user) {
     try {
       return await userModel.create(user);
     } catch (error) {
@@ -14,7 +13,7 @@ export default class UserManager {
     }
   }
 
-  async getUsers() {
+  async getAll() {
     try {
       if (query) query = JSON.parse(query);
       return await userModel.find().lean();
@@ -27,7 +26,7 @@ export default class UserManager {
     }
   }
 
-  async getUserBy(param) {
+  async getBy(param) {
     try {
       const user = await userModel.findOne(param).lean();
       return user;
@@ -39,7 +38,7 @@ export default class UserManager {
     }
   }
 
-  async updateUser(id, object) {
+  async put(id, object) {
     try {
       const productUpdated = await userModel.findByIdAndUpdate(id, object, {
         new: true,
@@ -58,7 +57,7 @@ export default class UserManager {
     }
   }
 
-  async deleteUser(id) {
+  async deleteById(id) {
     try {
       const productDeleted = await userModel.findByIdAndDelete(id);
       return productDeleted === null

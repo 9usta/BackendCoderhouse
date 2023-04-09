@@ -11,6 +11,8 @@ router.post("/", cartsController.post);
 
 router.post("/:cid/products/:pid", cartsController.postProductToCart);
 
+router.post("/:cid/purchase", cartsController.purchase);
+
 router.put("/:cid/products", cartsController.putProducts);
 
 router.put("/:cid/products/:pid", cartsController.putProductQuantity);

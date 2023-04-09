@@ -1,5 +1,7 @@
-import cartModel from "../models/cart.model.js";
 import ProductManager from "./ProductManager.js";
+import cartModel from "../../models/carts.model.js";
+import ticketModel from "../../models/ticket.model.js";
+import {faker} from "@faker-js/faker";
 
 const productM = new ProductManager();
 
@@ -53,14 +55,14 @@ export default class CartManager {
 
   async postProductToCart(cid, pid) {
     try {
-      const cartFinded = await this.getCartById(cid);
+      const cartFinded = await this.getById(cid);
       if (cartFinded.error)
         return {
           status: 404,
           error: `Cart with id ${cid} not found`,
         };
 
-      const productFinded = await productM.getProductById(pid);
+      const productFinded = await productM.getById(pid);
       if (productFinded.error)
         return {
           status: 404,
@@ -83,6 +85,7 @@ export default class CartManager {
         $push: {products: {pid, quantity: 1}},
       });
     } catch (error) {
+      console.log(error);
       return {
         status: 500,
         error: `An error occurred while adding the product`,
@@ -92,10 +95,10 @@ export default class CartManager {
 
   async putProducts(cid, products) {
     try {
-      const cartFinded = await this.getCartById(cid);
+      const cartFinded = await this.getById(cid);
       if (cartFinded.error) return cartFinded;
 
-      const dbProducts = (await productM.getProducts()).payload.map((product) =>
+      const dbProducts = (await productM.getAll()).payload.map((product) =>
         product._id.toString()
       );
 
@@ -110,7 +113,7 @@ export default class CartManager {
           error: "Error when trying to add a non-existent product to the cart",
         };
 
-      await this.removeAllProductsToCart(cid);
+      await this.deleteProducts(cid);
       await cartModel.findByIdAndUpdate(cid, {products: products});
       return {status: "success", message: "Cart updated successfully"};
     } catch (error) {
@@ -126,10 +129,10 @@ export default class CartManager {
       if (typeof quantity !== "number")
         return {status: 400, error: "the amount must be a number"};
 
-      const cartFinded = await this.getCartById(cid);
+      const cartFinded = await this.getById(cid);
       if (cartFinded.error) return cartFinded;
 
-      const productFinded = await productM.getProductById(pid);
+      const productFinded = await productM.getById(pid);
       if (productFinded.error)
         return {
           status: 404,
@@ -164,9 +167,9 @@ export default class CartManager {
     }
   }
 
-  async deleteToCart(cid, pid) {
+  async deleteProductToCart(cid, pid) {
     try {
-      const cartFinded = await this.getCartById(cid);
+      const cartFinded = await this.getById(cid);
       if (cartFinded.error)
         return {
           status: 404,
@@ -195,7 +198,7 @@ export default class CartManager {
 
   async deleteProducts(cid) {
     try {
-      const cartFinded = await this.getCartById(cid);
+      const cartFinded = await this.getById(cid);
       if (cartFinded.error)
         return {
           status: 404,
@@ -225,6 +228,47 @@ export default class CartManager {
             message: `Cart with id ${cid} deleted successfully`,
           };
     } catch (error) {
+      return {
+        status: 500,
+        error: `An error occurred while deleting products`,
+      };
+    }
+  }
+
+  async purchase(cid, purchaser) {
+    try {
+      const productsInCart = await this.getById(cid);
+
+      if (productsInCart.error)
+        return {
+          status: 404,
+          error: `Cart with id ${cid} not found`,
+        };
+
+      const existProductOutStock = Boolean(
+        productsInCart.find((product) => product.pid.stock < product.quantity)
+      );
+
+      if (existProductOutStock)
+        return {status: 400, message: "Exist product out stock"};
+
+      let totalAmount = 0;
+
+      for (const product of productsInCart) {
+        const newStock = product.pid.stock - product.quantity;
+        totalAmount += product.pid.price;
+        await productM.putById(product.pid._id, {stock: newStock});
+      }
+
+      const ticket = await ticketModel.create({
+        code: faker.database.mongodbObjectId(),
+        purchaseDateTime: new Date().toLocaleString(),
+        amount: totalAmount,
+        purchaser: purchaser,
+      });
+      return {payload: {ticket, productsInCart}};
+    } catch (error) {
+      console.log(error);
       return {
         status: 500,
         error: `An error occurred while deleting products`,

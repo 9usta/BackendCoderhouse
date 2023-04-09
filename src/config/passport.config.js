@@ -1,16 +1,22 @@
-import userModel from "../dao/models/users.model.js";
 import userService from "passport-github2";
 import passport from "passport";
 import local from "passport-local";
-import UserManager from "../dao/mongoManagers/UserManager.js";
-import CartManager from "../dao/mongoManagers/CartManager.js";
-
 import { createHash, isValidPassword } from "../utils.js";
-
 import jwt from "passport-jwt";
+import {UsersService} from "../dao/repositories/index.js";
+import {CartsService} from "../dao/repositories/index.js";
+import nodemailer from "nodemailer";
+import config from "./config.js";
 
-const userManager = new UserManager();
-const cartManager = new CartManager();
+const transport = nodemailer.createTransport({
+  service: "gmail",
+  port: 587,
+  auth: {
+    user: "gustavoc.99@gmail.com",
+    pass: "qddovkncsruyqpqt",
+  },
+});
+
 
 const jwtStrategy = jwt.Strategy;
 const extractJwt = jwt.ExtractJwt;
@@ -22,7 +28,7 @@ const initPassport = () => {
   });
 
   passport.deserializeUser(async (id, done) => {
-    let user = await userManager.findUser({ _id: id });
+    let user = await UsersService.getBy({ _id: id });
     done(null, user);
   });
 
@@ -30,10 +36,10 @@ const initPassport = () => {
     "register",
     new localStrategy(
       { passReqToCallback: true, usernameField: "email" },
-      async (req, something, username, done) => {
-        const { first_name, last_name, age, email, password } = req.body;
+      async (req, email, password, done) => {
+        const { first_name, last_name, age} = req.body;
         try {
-          let user = await userManager.findUser({ email: email });
+          let user = await UsersService.getBy({email});
           console.log(user);
           if (user != null) {
             console.log("El usuario ya existe");
@@ -42,24 +48,29 @@ const initPassport = () => {
               message: "El usuario ya existe",
             });
           }
-
-          let cartObj = await cartManager.createCart();
+          let cartObj = await CartsService.post();
           console.log(cartObj);
 
           let cart = cartObj._id;
-
           const result = {
             first_name,
             last_name,
-            email,
             age,
-            password: createHash(password),
             cart,
+            email,
+            password: createHash(password),
           };
 
-          let newUser = await userManager.addUser(result);
+          await transport.sendMail({
+            from: "gustavoc.99@gmail.com",
+            to: `${email}`,
+            subject: "prueba",
+            text: `Usuario registrado correctamente. \n Credenciales: \n Email:${email} \n Password: ${password}`,
+          });
 
-          return done(null, newUser);
+          const newUser = await UsersService.post(result);
+          return done(null, newUser, {message: "Usuario creado con exito"});
+
         } catch (error) {
           done(error);
         }
@@ -70,10 +81,20 @@ const initPassport = () => {
     "login",
     new localStrategy(
       { passReqToCallback: true, usernameField: "email" },
-      async (req, username, pass, done) => {
-        const { email, password } = req.body;
+      async ( email, password , done) => {
         try {
-          const user = await userManager.findUser({ email });
+          if (
+            email === config.adminEmail &&
+            password === config.adminPassword
+          ) {
+            const user = {
+              email,
+              password,
+              role: "admin",
+            };
+            return done(null, user);
+          }
+          const user = await UsersService.getBy({ email });
           if (!user) {
             console.log("El usuario no existe");
             return done(null, false, {
@@ -107,9 +128,9 @@ const initPassport = () => {
       async (accessToken, refreshToken, profile, done) => {
         try {
           console.log(profile);
-          let user = await userModel.findOne({ email: profile._json.email });
+          let user = await UsersService.getBy({ email: profile._json.email });
           if (!user) {
-            let cartObj = await cartManager.createCart();
+            let cartObj = await CartsService.post();
             console.log(cartObj);
 
             let cart = cartObj._id;
@@ -122,7 +143,7 @@ const initPassport = () => {
               password: " ",
               cart,
             };
-            let newUser = await userManager.addUser(result);
+            let newUser = await UsersService.addUser(result);
             return done(null, newUser);
           } else {
             done(null, user);
