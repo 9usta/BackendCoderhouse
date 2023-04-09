@@ -1,4 +1,4 @@
-import {Router} from "express";
+import { Router } from "express";
 import * as productsController from "../controller/products.controller.js";
 import ProductManager from "../dao/classes/dbManager/ProductManager.js";
 const router = Router();

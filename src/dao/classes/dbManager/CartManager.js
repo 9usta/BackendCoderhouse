@@ -1,7 +1,7 @@
 import ProductManager from "./ProductManager.js";
 import cartModel from "../../models/carts.model.js";
 import ticketModel from "../../models/ticket.model.js";
-import {faker} from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 
 const productM = new ProductManager();
 
@@ -44,7 +44,7 @@ export default class CartManager {
 
   async post() {
     try {
-      return await cartModel.create({products: []});
+      return await cartModel.create({ products: [] });
     } catch (error) {
       return {
         status: 500,
@@ -78,11 +78,11 @@ export default class CartManager {
         );
         const newCart = cartFinded;
         newCart[productIndex].quantity++;
-        return await cartModel.findByIdAndUpdate(cid, {products: newCart});
+        return await cartModel.findByIdAndUpdate(cid, { products: newCart });
       }
 
       return await cartModel.findByIdAndUpdate(cid, {
-        $push: {products: {pid, quantity: 1}},
+        $push: { products: { pid, quantity: 1 } },
       });
     } catch (error) {
       console.log(error);
@@ -114,8 +114,8 @@ export default class CartManager {
         };
 
       await this.deleteProducts(cid);
-      await cartModel.findByIdAndUpdate(cid, {products: products});
-      return {status: "success", message: "Cart updated successfully"};
+      await cartModel.findByIdAndUpdate(cid, { products: products });
+      return { status: "success", message: "Cart updated successfully" };
     } catch (error) {
       return {
         status: 500,
@@ -127,7 +127,7 @@ export default class CartManager {
   async putProductQuantity(cid, pid, quantity) {
     try {
       if (typeof quantity !== "number")
-        return {status: 400, error: "the amount must be a number"};
+        return { status: 400, error: "the amount must be a number" };
 
       const cartFinded = await this.getById(cid);
       if (cartFinded.error) return cartFinded;
@@ -149,7 +149,7 @@ export default class CartManager {
         const newCart = [...cartFinded];
         newCart[productIndex].quantity = quantity;
 
-        await cartModel.findByIdAndUpdate(cid, {products: newCart});
+        await cartModel.findByIdAndUpdate(cid, { products: newCart });
         return {
           status: "success",
           message: "The quantity updated successfully",
@@ -181,8 +181,10 @@ export default class CartManager {
       );
 
       if (productInCart) {
-        await cartModel.findByIdAndUpdate(cid, {$pull: {products: {pid}}});
-        return {status: "success", message: "Product deleted successfully"};
+        await cartModel.findByIdAndUpdate(cid, {
+          $pull: { products: { pid } },
+        });
+        return { status: "success", message: "Product deleted successfully" };
       }
       return {
         status: 404,
@@ -205,8 +207,8 @@ export default class CartManager {
           error: `Cart with id ${cid} not found`,
         };
 
-      await cartModel.findByIdAndUpdate(cid, {products: []});
-      return {status: "success", message: "All product deleted successfully"};
+      await cartModel.findByIdAndUpdate(cid, { products: [] });
+      return { status: "success", message: "All product deleted successfully" };
     } catch (error) {
       return {
         status: 500,
@@ -250,14 +252,14 @@ export default class CartManager {
       );
 
       if (existProductOutStock)
-        return {status: 400, message: "Exist product out stock"};
+        return { status: 400, message: "Exist product out stock" };
 
       let totalAmount = 0;
 
       for (const product of productsInCart) {
         const newStock = product.pid.stock - product.quantity;
         totalAmount += product.pid.price;
-        await productM.putById(product.pid._id, {stock: newStock});
+        await productM.putById(product.pid._id, { stock: newStock });
       }
 
       const ticket = await ticketModel.create({
@@ -266,7 +268,7 @@ export default class CartManager {
         amount: totalAmount,
         purchaser: purchaser,
       });
-      return {payload: {ticket, productsInCart}};
+      return { payload: { ticket, productsInCart } };
     } catch (error) {
       console.log(error);
       return {

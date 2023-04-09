@@ -1,5 +1,5 @@
 import fs from "fs";
-import {faker} from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 
 export default class ProductManager {
   constructor() {
@@ -103,9 +103,9 @@ export default class ProductManager {
       const productFinded = products.find((product) => product.id === id);
       return productFinded
         ? productFinded
-        : {status: 404, error: "Product not found"};
+        : { status: 404, error: "Product not found" };
     } catch (error) {
-      return {status: 500, error: "Error from server"};
+      return { status: 500, error: "Error from server" };
     }
   }
 
@@ -115,7 +115,7 @@ export default class ProductManager {
       if (getResponse.error) return getResponse;
       const products = getResponse.payload;
       const product = products.find((dbProduct) => dbProduct.id === id);
-      if (!product) return {status: 404, error: "Product not found"};
+      if (!product) return { status: 404, error: "Product not found" };
       const productIndex = products.findIndex(
         (dbProduct) => dbProduct.id === id
       );
@@ -131,7 +131,7 @@ export default class ProductManager {
       };
     } catch (error) {
       console.log(error);
-      return {status: 500, error: "Error from server"};
+      return { status: 500, error: "Error from server" };
     }
   }
 
@@ -141,22 +141,22 @@ export default class ProductManager {
       if (getResponse.error) return getResponse;
       const products = getResponse.payload;
       const product = products.find((product) => product.id === id);
-      if (!product) return {status: 404, error: "Product not found"};
+      if (!product) return { status: 404, error: "Product not found" };
       const productIndex = products.findIndex(
         (dbProduct) => dbProduct.id === id
       );
       products.splice(productIndex, 1);
       await this.writeFile(products);
-      return {status: "Ok", message: "Product deleted successfully"};
+      return { status: "Ok", message: "Product deleted successfully" };
     } catch (error) {
-      return {status: 500, error: "Error from server"};
+      return { status: 500, error: "Error from server" };
     }
   }
 
   async writeFile(data) {
     try {
       await fs.promises.writeFile(this.path, JSON.stringify(data));
-      return {status: "Ok", message: "Added successfully"};
+      return { status: "Ok", message: "Added successfully" };
     } catch (error) {
       return {
         status: 500,

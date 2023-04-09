@@ -1,5 +1,5 @@
 import fs from "fs";
-import {faker} from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import ProductManager from "./ProductManager.js";
 const pm = new ProductManager();
 export default class CartsManager {
@@ -10,7 +10,7 @@ export default class CartsManager {
   async post() {
     const carts = await this.getAll();
     if (carts.error) return carts;
-    const newCart = {id: faker.database.mongodbObjectId(), products: []};
+    const newCart = { id: faker.database.mongodbObjectId(), products: [] };
     carts.push(newCart);
     return await this.writeFile(carts);
   }
@@ -35,11 +35,11 @@ export default class CartsManager {
       const carts = await this.getAll();
       if (carts.error) return carts;
       const cart = carts.find((dbCart) => dbCart.id === id);
-      if (!cart) return {status: 404, error: "Cart not found"};
+      if (!cart) return { status: 404, error: "Cart not found" };
       return cart;
     } catch (error) {
       console.log(error);
-      return {status: 500, error: "Error from server"};
+      return { status: 500, error: "Error from server" };
     }
   }
 
@@ -68,13 +68,13 @@ export default class CartsManager {
       }
       const getProduct = await pm.getById(pid);
       if (getProduct.error) return getProduct;
-      cart.products.push({id: pid, quantity: 1});
+      cart.products.push({ id: pid, quantity: 1 });
       carts.splice(cartIndex, 1, cart);
       await this.writeFile(carts);
-      return {status: "success", message: "Product posted successfully"};
+      return { status: "success", message: "Product posted successfully" };
     } catch (error) {
       console.log(error);
-      return {status: 500, error: "Error from server"};
+      return { status: 500, error: "Error from server" };
     }
   }
 
@@ -86,24 +86,24 @@ export default class CartsManager {
       if (cart.error) return cart;
       const cartIndex = carts.find((dbCart) => dbCart.id === cid);
       const product = cart.products.find((dbProduct) => dbProduct.id === pid);
-      if (!product) return {status: 404, error: "Product not found"};
+      if (!product) return { status: 404, error: "Product not found" };
       const productIndex = cart.products.findIndex(
         (dbProduct) => dbProduct.id === pid
       );
       cart.products.splice(productIndex, 1);
       carts.splice(cartIndex, 1, cart);
       await this.writeFile(carts);
-      return {status: "Ok", message: "Product removed from cart succesfully"};
+      return { status: "Ok", message: "Product removed from cart succesfully" };
     } catch (error) {
       console.log(error);
-      return {status: 500, error: "Error from server"};
+      return { status: 500, error: "Error from server" };
     }
   }
 
   async writeFile(data) {
     try {
       await fs.promises.writeFile(this.path, JSON.stringify(data));
-      return {status: "Ok", message: "Added successfully"};
+      return { status: "Ok", message: "Added successfully" };
     } catch (error) {
       return {
         status: 500,

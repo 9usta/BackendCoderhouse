@@ -8,7 +8,7 @@ export default class ProductManager {
       const result = await productModel.paginate(query, {
         limit: limit,
         page: page,
-        sort: {price: sort},
+        sort: { price: sort },
         lean: true,
       });
       if (result.hasNextPage)
@@ -102,7 +102,7 @@ export default class ProductManager {
             status: 404,
             error: `Product with id ${id} not found`,
           }
-        : {status: 200, message: `Product with ${id} deleted succesfully`};
+        : { status: 200, message: `Product with ${id} deleted succesfully` };
     } catch (error) {
       return {
         status: 500,

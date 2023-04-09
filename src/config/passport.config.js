@@ -3,8 +3,8 @@ import passport from "passport";
 import local from "passport-local";
 import { createHash, isValidPassword } from "../utils.js";
 import jwt from "passport-jwt";
-import {UsersService} from "../dao/repositories/index.js";
-import {CartsService} from "../dao/repositories/index.js";
+import { UsersService } from "../dao/repositories/index.js";
+import { CartsService } from "../dao/repositories/index.js";
 import nodemailer from "nodemailer";
 import config from "./config.js";
 
@@ -16,7 +16,6 @@ const transport = nodemailer.createTransport({
     pass: "qddovkncsruyqpqt",
   },
 });
-
 
 const jwtStrategy = jwt.Strategy;
 const extractJwt = jwt.ExtractJwt;
@@ -37,9 +36,9 @@ const initPassport = () => {
     new localStrategy(
       { passReqToCallback: true, usernameField: "email" },
       async (req, email, password, done) => {
-        const { first_name, last_name, age} = req.body;
+        const { first_name, last_name, age } = req.body;
         try {
-          let user = await UsersService.getBy({email});
+          let user = await UsersService.getBy({ email });
           console.log(user);
           if (user != null) {
             console.log("El usuario ya existe");
@@ -69,8 +68,7 @@ const initPassport = () => {
           });
 
           const newUser = await UsersService.post(result);
-          return done(null, newUser, {message: "Usuario creado con exito"});
-
+          return done(null, newUser, { message: "Usuario creado con exito" });
         } catch (error) {
           done(error);
         }
@@ -81,7 +79,7 @@ const initPassport = () => {
     "login",
     new localStrategy(
       { passReqToCallback: true, usernameField: "email" },
-      async ( email, password , done) => {
+      async (email, password, done) => {
         try {
           if (
             email === config.adminEmail &&
@@ -90,7 +88,7 @@ const initPassport = () => {
             const user = {
               email,
               password,
-              role: "admin",
+              rol: "admin",
             };
             return done(null, user);
           }
@@ -157,15 +155,15 @@ const initPassport = () => {
 };
 
 export const cookieExtractor = (req) => {
-    let token = null;
-    if (req && req.cookies) {
-      token = req.cookies["coderCookieToken"];
-    }
-    return token;
-  };
-  
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies["coderCookieToken"];
+  }
+  return token;
+};
+
 passport.use(
-  'jwt',
+  "jwt",
   new jwtStrategy(
     {
       jwtFromRequest: extractJwt.fromExtractors([cookieExtractor]),
@@ -181,7 +179,5 @@ passport.use(
     }
   )
 );
-
-
 
 export default initPassport;

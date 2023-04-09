@@ -65,7 +65,7 @@ export default class UserManager {
             status: 404,
             error: `Product with id ${id} not found`,
           }
-        : {status: 200, message: `Product with ${id} deleted succesfully`};
+        : { status: 200, message: `Product with ${id} deleted succesfully` };
     } catch (error) {
       return {
         status: 500,

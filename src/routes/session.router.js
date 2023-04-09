@@ -2,6 +2,7 @@ import { Router } from "express";
 import userModel from "../dao/models/users.model.js";
 import passport from "passport";
 import { createHash } from "../utils.js";
+import ClientUser from "../dao/dto/ClientUser.js";
 
 const router = Router();
 
@@ -98,7 +99,8 @@ router.post("/recover", async (req, res) => {
 });
 
 router.get("/current", passport.authenticate('jwt'), (req, res) => {
-  res.send(req.user);
+  const user = new ClientUser(req.user);
+  res.send(user);
 });
 
 export default router;

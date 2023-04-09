@@ -1,4 +1,4 @@
-import {ProductsService} from "../dao/repositories/index.js";
+import { ProductsService } from "../dao/repositories/index.js";
 
 export const post = async (req, res) => {
   const {
@@ -22,7 +22,7 @@ export const post = async (req, res) => {
     !category ||
     !thumbnails
   )
-    return res.status(400).send({status: 400, error: "Missing values"});
+    return res.status(400).send({ status: 400, error: "Missing values" });
 
   const product = {
     title,
@@ -43,7 +43,7 @@ export const post = async (req, res) => {
 };
 
 export const getAll = async (req, res) => {
-  let {query, limit, page, sort} = req.query;
+  let { query, limit, page, sort } = req.query;
   if (limit) limit = +limit;
   if (page) page = +page;
   if (sort) sort = +sort;
@@ -64,8 +64,16 @@ export const getById = async (req, res) => {
 
 export const putById = async (req, res) => {
   const id = req.params.pid;
-  const {title, description, code, price, status, stock, category, thumbnails} =
-    req.body;
+  const {
+    title,
+    description,
+    code,
+    price,
+    status,
+    stock,
+    category,
+    thumbnails,
+  } = req.body;
   const object = {
     title,
     description,

@@ -1,4 +1,4 @@
-import {CartsService} from "../dao/repositories/index.js";
+import { CartsService } from "../dao/repositories/index.js";
 
 export const getAll = async (req, res) => {
   const getResponse = await CartsService.getAll();
@@ -26,7 +26,7 @@ export const post = async (req, res) => {
 };
 
 export const postProductToCart = async (req, res) => {
-  const {cid, pid} = req.params;
+  const { cid, pid } = req.params;
   const postResponse = await CartsService.postProductToCart(cid, pid);
 
   return !postResponse.error
@@ -45,8 +45,8 @@ export const putProducts = async (req, res) => {
 };
 
 export const putProductQuantity = async (req, res) => {
-  const {cid, pid} = req.params;
-  const {quantity} = req.body;
+  const { cid, pid } = req.params;
+  const { quantity } = req.body;
   const putResponse = await CartsService.putProductQuantity(cid, pid, quantity);
 
   return !putResponse.error
