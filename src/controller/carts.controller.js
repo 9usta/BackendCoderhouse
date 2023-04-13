@@ -84,8 +84,7 @@ export const deleteById = async (req, res) => {
 
 export const purchase = async (req, res) => {
   const cid = req.params.cid;
-  const purchaser = req.user.email;
-  const purchaseResponse = await CartsService.purchase(cid, purchaser);
+  const purchaseResponse = await CartsService.purchase(cid);
 
   return !purchaseResponse.error
     ? res.send(purchaseResponse)

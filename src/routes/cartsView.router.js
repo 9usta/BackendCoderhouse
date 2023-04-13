@@ -6,7 +6,7 @@ const cartManager = new CartManager();
 
 router.get("/:cid", async (req, res) => {
   const { cid } = req.params;
-  const cart = await cartManager.getCartById(cid);
+  const cart = await cartManager.getById(cid);
   console.log(cart);
 
   res.render("cart", { cart });

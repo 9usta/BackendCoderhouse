@@ -25,20 +25,15 @@ export default class CartManager {
     }
   }
 
-  async getById(id) {
+  async getById(cid) {
     try {
-      const cart = await cartModel.findById(id).lean().populate("products.pid");
-      return cart === null
-        ? {
-            status: 404,
-            error: `Cart with id ${id} not found`,
-          }
-        : cart.products;
+      const cart = await cartModel.findById(cid).populate({
+        path: "products",
+        populate: { path: "product", model: "products" },
+      });
+      return cart;
     } catch (error) {
-      return {
-        status: 500,
-        error: `An error occurred while obtaining the cart with id ${id}`,
-      };
+      console.log(error);
     }
   }
 
@@ -55,41 +50,22 @@ export default class CartManager {
 
   async postProductToCart(cid, pid) {
     try {
-      const cartFinded = await this.getById(cid);
-      if (cartFinded.error)
-        return {
-          status: 404,
-          error: `Cart with id ${cid} not found`,
-        };
-
-      const productFinded = await productM.getById(pid);
-      if (productFinded.error)
-        return {
-          status: 404,
-          error: `Product with id ${pid} not found`,
-        };
-
-      const productInCart = cartFinded.find(
-        (product) => product.pid._id == pid
+      const cart = await cartModel.findById(cid);
+      const product = cart.products.find(
+        (item) => item.product.toString() === pid
       );
-      if (productInCart) {
-        const productIndex = cartFinded.findIndex(
-          (product) => product.pid._id == pid
-        );
-        const newCart = cartFinded;
-        newCart[productIndex].quantity++;
-        return await cartModel.findByIdAndUpdate(cid, { products: newCart });
+      if (product) {
+        product.quantity++;
+      } else {
+        cart.products.push({
+          product: pid,
+          quantity: 1,
+        });
       }
-
-      return await cartModel.findByIdAndUpdate(cid, {
-        $push: { products: { pid, quantity: 1 } },
-      });
+      cart.save();
+      return cart;
     } catch (error) {
       console.log(error);
-      return {
-        status: 500,
-        error: `An error occurred while adding the product`,
-      };
     }
   }
 
@@ -257,9 +233,9 @@ export default class CartManager {
       let totalAmount = 0;
 
       for (const product of productsInCart) {
-        const newStock = product.pid.stock - product.quantity;
-        totalAmount += product.pid.price;
-        await productM.putById(product.pid._id, { stock: newStock });
+        const newStock = product.product.stock - product.quantity;
+        totalAmount += product.product.price;
+        await productM.putById(product.product._id, { stock: newStock });
       }
 
       const ticket = await ticketModel.create({
@@ -268,6 +244,7 @@ export default class CartManager {
         amount: totalAmount,
         purchaser: purchaser,
       });
+
       return { payload: { ticket, productsInCart } };
     } catch (error) {
       console.log(error);

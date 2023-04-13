@@ -7,7 +7,7 @@ const url = "http://localhost:8080/products/?";
 
 router.get("/", async (req, res) => {
   const { query, limit = 10, page = 1, sort } = req.query;
-  const response = await productManager.getProducts(query, limit, page, sort);
+  const response = await productManager.getAll(query, limit, page, sort);
   const isLogin = req.session.user ? true : false;
   const user = req.session.user;
   console.log(response);

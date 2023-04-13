@@ -79,7 +79,8 @@ const initPassport = () => {
     "login",
     new localStrategy(
       { passReqToCallback: true, usernameField: "email" },
-      async (email, password, done) => {
+      async (req, username, pass, done) => {
+        const { email, password } = req.body;
         try {
           if (
             email === config.adminEmail &&

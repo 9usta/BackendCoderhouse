@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as cartsController from "../controller/carts.controller.js";
+import passport from "passport";
 
 const router = Router();
 
@@ -11,7 +12,7 @@ router.post("/", cartsController.post);
 
 router.post("/:cid/products/:pid", cartsController.postProductToCart);
 
-router.post("/:cid/purchase", cartsController.purchase);
+router.post("/:cid/purchase", passport.authenticate('jwt', {session: false}),cartsController.purchase);
 
 router.put("/:cid/products", cartsController.putProducts);
 
