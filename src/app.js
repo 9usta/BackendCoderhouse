@@ -80,7 +80,7 @@ app.use("/messages", messagesRouter);
 app.use("/products", productsViewRouter);
 app.use("/cart", cartsViewRouter);
 app.use("/session", sessionViewRouter);
-app.use("/logger", loggerViewRouter);
+app.use("/loggerTest", loggerViewRouter);
 
 const messageManager = new MessageManager();
 
