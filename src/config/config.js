@@ -9,4 +9,5 @@ export default {
   adminPassword: process.env.ADMIN_PASSWORD,
   persistence: process.env.PERSISTENCE,
   cookieSecret: process.env.COOKIE_SECRET,
+  enviorment: process.env.ENVIORMENT,
 };

@@ -17,10 +17,12 @@ import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import sessionRouter from "./routes/session.router.js";
 import sessionViewRouter from "./routes/sessionView.router.js";
+import loggerViewRouter from "./routes/loggerView.router.js";
 import passport from "passport";
 import initPassport from "./config/passport.config.js";
 import config from "./config/config.js";
-
+import handleError from "./middlewares/handleError.js";
+import {addLogger} from "./logger/logger.js";
 
 const app = express();
 const FileStorage = FileStore(session);
@@ -37,6 +39,8 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
+app.use(addLogger);
+app.use(handleError);
 app.use(
   session({
     store: MongoStore.create({
@@ -76,6 +80,8 @@ app.use("/messages", messagesRouter);
 app.use("/products", productsViewRouter);
 app.use("/cart", cartsViewRouter);
 app.use("/session", sessionViewRouter);
+app.use("/logger", loggerViewRouter);
+
 const messageManager = new MessageManager();
 
 socketServer.on("connection", async (socket) => {
