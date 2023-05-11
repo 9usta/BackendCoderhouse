@@ -103,4 +103,35 @@ router.get("/current", passport.authenticate('jwt'), (req, res) => {
   res.send(user);
 });
 
+router.post("/recoverLanding", async (req, res) => {
+  req.logger.http(`${req.method} at ${req.url} - ${new Date().toLocaleDateString()}`);
+
+  try {
+      let token = req.params.token;
+      req.logger.debug(token);
+      
+      let result;
+
+      jwt.verify(token, config.jwtKey, function(error, decoded) {
+          if (error) {
+              if (error instanceof jwt.TokenExpiredError) {
+                  result = "EXPIRED";
+              }
+          } else {
+              result = decoded;
+          }
+      });
+
+      if (result == "EXPIRED") {
+          req.logger.debug("Expiró")
+          let hasExpired = true;
+          return res.render('recoverLanding', {hasExpired});
+      }
+
+      res.render('recoverLanding', {token});
+  } catch (error) {
+      req.logger.error(error);
+      res.render('error');
+  }
+})
 export default router;

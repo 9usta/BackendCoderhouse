@@ -22,7 +22,6 @@ const ticketSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { versionKey: false }
 );
 
 const ticketModel = mongoose.model(ticketsCollection, ticketSchema);

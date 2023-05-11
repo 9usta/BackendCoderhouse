@@ -23,6 +23,8 @@ import initPassport from "./config/passport.config.js";
 import config from "./config/config.js";
 import handleError from "./middlewares/handleError.js";
 import {addLogger} from "./logger/logger.js";
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
 
 const app = express();
 const FileStorage = FileStore(session);
@@ -72,6 +74,20 @@ app.engine(
 );
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
+
+const swaggerOptions = {
+  definition: {
+      openapi: '3.0.1',
+      info: {
+          title: "Documentacion de las API",
+          description: "APIs desarrolladas que conforman parte del proyecto"
+      }
+  },
+  apis: [`./src/docs/**.yaml`]
+};
+
+const specs = swaggerJsdoc(swaggerOptions);
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartsRouter);

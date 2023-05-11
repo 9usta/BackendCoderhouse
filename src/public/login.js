@@ -12,6 +12,7 @@ loginForm.addEventListener("submit", (e) => {
     .then((res) => {
       if (res.error) {
         loginForm.firstChild.textContent = `${res.error}`;
+        loginForm.innerHTML =`<p>Contraseña incorrecta, Restablece tu contraseña <a href="/session/recover">aquí</a></p>`;
         console.log(res.error);
         return;
       } else {
