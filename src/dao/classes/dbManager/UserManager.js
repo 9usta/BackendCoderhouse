@@ -73,4 +73,18 @@ export default class UserManager {
       };
     }
   }
+
+  async editLastConnection(user, lastConnection) {
+    try {
+      user.last_connection = lastConnection;
+      let result = await userModel.updateOne({ email: user.email }, user);
+
+      return result;
+    } catch (error) {
+      return {
+        status: 500,
+        error: `An error occurred while updating the conection`,
+      };
+    }
+  }
 }

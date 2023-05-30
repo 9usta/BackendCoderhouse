@@ -15,8 +15,8 @@ export default class UsersRepository {
     return await this.dao.getBy(param);
   }
 
-  async put(id, object) {
-    return await this.dao.put(id, object);
+  async putBy(id, object) {
+    return await this.dao.putBy(id, object);
   }
 
   async deleteById(id) {

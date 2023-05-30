@@ -1,5 +1,5 @@
 import { ProductsService } from "../dao/repositories/index.js";
-import customError from "../errors/customError.js";
+import CustomError from "../errors/CustomError.js";
 import { enumErrors } from "../errors/enumErrors.js";
 
 export const post = async (req, res) => {
@@ -25,7 +25,7 @@ export const post = async (req, res) => {
       !category ||
       !thumbnails
     )
-      customError.create({
+      CustomError.create({
         name: "Error al cargar producto",
         message: "Complete toda la informacion requerida",
         cause: "Incomplete required inputs",
@@ -46,7 +46,7 @@ export const post = async (req, res) => {
 
     const postResponse = await ProductsService.post(product);
     if (postResponse.error)
-      customError.create({ code: enumErrors.ERROR_FROM_SERVER });
+      CustomError.create({ code: enumErrors.ERROR_FROM_SERVER });
 
     return res.status(201).send(postResponse);
   } catch (error) {
@@ -63,7 +63,7 @@ export const getAll = async (req, res, next) => {
 
     const getResponse = await ProductsService.getAll(query, limit, page, sort);
     if (getResponse.error)
-      customError.create({ code: enumErrors.ERROR_FROM_SERVER });
+      CustomError.create({ code: enumErrors.ERROR_FROM_SERVER });
 
     return res.status(200).json(getResponse);
   } catch (error) {
@@ -77,7 +77,7 @@ export const getById = async (req, res, next) => {
     const getResponse = await ProductsService.getById(id);
 
     if (getResponse.error)
-      customError.create(
+      CustomError.create(
         getResponse.status === 404
           ? {
               name: `Error al obtener el producto: ${id}`,
@@ -117,7 +117,7 @@ export const putById = async (req, res, next) => {
       !category &&
       !thumbnails
     )
-      customError.create({
+      CustomError.create({
         name: "Error al cargar el producto",
         message: "Complete los parametros requeridos",
         cause: "Incomplete required inputs",
@@ -136,7 +136,7 @@ export const putById = async (req, res, next) => {
     };
     const putResponse = await ProductsService.putById(id, object);
     if (putResponse.error)
-      customError.create({ code: enumErrors.ERROR_FROM_SERVER });
+      CustomError.create({ code: enumErrors.ERROR_FROM_SERVER });
 
     return res.send(putResponse);
   } catch (error) {
@@ -149,7 +149,7 @@ export const deleteById = async (req, res, next) => {
     const id = req.params.pid;
     const deleteResponse = await ProductsService.deleteById(id);
     if (deleteResponse.error)
-      customError.create({ code: enumErrors.ERROR_FROM_SERVER });
+      CustomError.create({ code: enumErrors.ERROR_FROM_SERVER });
 
     return res.send(deleteResponse);
   } catch (error) {

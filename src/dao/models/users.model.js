@@ -20,10 +20,22 @@ const userSchema = new mongoose.Schema({
     ],
     default: [],
   },
-  rol: {
+  role: {
     type: String,
     enum: ["user", "premium", "admin"],
     default: "user",
+  },
+  last_connection: {
+    type: String,
+  },
+  documents: {
+    type: [
+      {
+        name: String,
+        reference: String,
+      },
+    ],
+    default: [],
   },
 });
 

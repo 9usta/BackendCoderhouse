@@ -7,15 +7,7 @@ import { UsersService } from "../dao/repositories/index.js";
 import { CartsService } from "../dao/repositories/index.js";
 import nodemailer from "nodemailer";
 import config from "./config.js";
-
-const transport = nodemailer.createTransport({
-  service: "gmail",
-  port: 587,
-  auth: {
-    user: "gustavoc.99@gmail.com",
-    pass: "qddovkncsruyqpqt",
-  },
-});
+import {transport} from "../services/mailling.js";
 
 const jwtStrategy = jwt.Strategy;
 const extractJwt = jwt.ExtractJwt;
@@ -89,7 +81,7 @@ const initPassport = () => {
             const user = {
               email,
               password,
-              rol: "admin",
+              role: "admin",
             };
             return done(null, user);
           }

@@ -5,6 +5,7 @@ export let Carts;
 export let Products;
 export let Users;
 export let Connection;
+export let Tickets;
 
 switch (config.persistence) {
   case "MONGO":
@@ -24,10 +25,12 @@ switch (config.persistence) {
     const { default: UsersMongo } = await import(
       "./classes/dbManager/UserManager.js"
     );
+    const { default: TicketsMongo } = await import("./classes/dbManager/TicketsManager.js");
 
     Carts = CartsMongo;
     Products = ProductsMongo;
     Users = UsersMongo;
+    Tickets = TicketsMongo;
     break;
   case "MEMORY":
     const { default: CartsMemory } = await import(
@@ -39,9 +42,11 @@ switch (config.persistence) {
     const { default: UsersMemory } = await import(
       "./classes/fileManager/UserManager.js"
     );
+    const { default: TicketsMemory } = await import("./classes/fileManager/TicketsManager.js");
 
     Carts = CartsMemory;
     Products = ProductsMemory;
     Users = UsersMemory;
+    Tickets = TicketsMemory;
     break;
 }

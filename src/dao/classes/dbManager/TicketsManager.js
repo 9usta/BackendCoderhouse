@@ -1,4 +1,4 @@
-import ticketsModel from "../../models/tickets.js";
+import ticketsModel from "../../models/ticket.model.js";
 
 export default class Ticket {
     constructor() {}

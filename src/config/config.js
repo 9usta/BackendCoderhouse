@@ -10,4 +10,9 @@ export default {
   persistence: process.env.PERSISTENCE,
   cookieSecret: process.env.COOKIE_SECRET,
   enviorment: process.env.ENVIORMENT,
+  mailing:{
+    SERVICE: process.env.MAILING_SERVICE,
+    USER: process.env.MAILING_USER,
+    PASSWORD: process.env.MAILING_PASSWORD
+}
 };

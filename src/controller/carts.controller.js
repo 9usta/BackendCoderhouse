@@ -1,12 +1,12 @@
 import { CartsService } from "../dao/repositories/index.js";
-import customError from "../errors/customError.js";
+import CustomError from "../errors/CustomError.js";
 import { enumErrors } from "../errors/enumErrors.js";
 
 export const getAll = async (req, res) => {
   try {
     const getResponse = await CartsService.getAll();
     if (getResponse.error)
-      customError.create({ code: enumErrors.ERROR_FROM_SERVER });
+      CustomError.create({ code: enumErrors.ERROR_FROM_SERVER });
     return res.send(getResponse);
   } catch (error) {
     next(error);
@@ -18,7 +18,7 @@ export const getById = async (req, res, next) => {
     const id = req.params.cid;
     const getResponse = await CartsService.getById(id);
     if (getResponse.error)
-      customError.create(
+      CustomError.create(
         getResponse.status === 404
           ? {
               name: `Error al buscar: ${id}`,
@@ -41,7 +41,7 @@ export const post = async (req, res, next) => {
     const postResponse = await CartsService.post();
 
     if (postResponse.error)
-      customError.create({code: enumErrors.ERROR_FROM_SERVER});
+      CustomError.create({code: enumErrors.ERROR_FROM_SERVER});
 
     return res.send(postResponse);
   } catch (error) {
@@ -55,7 +55,7 @@ export const postProductToCart = async (req, res, next) => {
     const postResponse = await CartsService.postProductToCart(cid, pid);
 
     if (postResponse.error)
-      customError.create({code: enumErrors.ERROR_FROM_SERVER});
+      CustomError.create({code: enumErrors.ERROR_FROM_SERVER});
 
     return res.send(postResponse);
   } catch (error) {
@@ -69,7 +69,7 @@ export const putProducts = async (req, res, next) => {
     const products = req.body;
 
     if (!Array.isArray(products))
-      customError.create({
+      CustomError.create({
         name: "Error al actualizar el carrito",
         message: "Se requiere un array de productos",
         cause: "Not array received",
@@ -80,7 +80,7 @@ export const putProducts = async (req, res, next) => {
     const putResponse = await CartsService.putProducts(cid, products);
 
     if (putResponse.error)
-      customError.create({code: enumErrors.ERROR_FROM_SERVER});
+      CustomError.create({code: enumErrors.ERROR_FROM_SERVER});
 
     return res.send(putResponse);
   } catch (error) {
@@ -94,7 +94,7 @@ export const putProductQuantity = async (req, res, next) => {
     const {quantity} = req.body;
 
     if (typeof quantity !== "number")
-      customError.create({
+      CustomError.create({
         name: "Error al actualizar cantidad en el carrito",
         message: "Se requiere un numero valido de productos",
         cause: "Not number received",
@@ -109,7 +109,7 @@ export const putProductQuantity = async (req, res, next) => {
     );
 
     if (putResponse.error)
-      customError.create({code: enumErrors.ERROR_FROM_SERVER});
+      CustomError.create({code: enumErrors.ERROR_FROM_SERVER});
 
     return res.send(putResponse);
   } catch (error) {
@@ -124,7 +124,7 @@ export const deleteProductToCart = async (req, res, next) => {
     const deleteResponse = await CartsService.deleteProductToCart(cid, pid);
 
     if (deleteResponse.error)
-      customError.create({code: enumErrors.ERROR_FROM_SERVER});
+      CustomError.create({code: enumErrors.ERROR_FROM_SERVER});
 
     return res.send(deleteResponse);
   } catch (error) {
@@ -138,7 +138,7 @@ export const deleteProducts = async (req, res, next) => {
     const deleteResponse = await CartsService.deleteProducts(cid);
 
     if (deleteResponse.error)
-      customError.create({code: enumErrors.ERROR_FROM_SERVER});
+      CustomError.create({code: enumErrors.ERROR_FROM_SERVER});
 
     return res.send(deleteResponse);
   } catch (error) {
@@ -152,7 +152,7 @@ export const deleteById = async (req, res, next) => {
     const deleteResponse = await CartsService.deleteById(cid);
 
     if (deleteResponse.error)
-      customError.create({code: enumErrors.ERROR_FROM_SERVER});
+      CustomError.create({code: enumErrors.ERROR_FROM_SERVER});
 
     return res.send(deleteResponse);
   } catch (error) {
@@ -166,7 +166,7 @@ export const purchase = async (req, res, next) => {
     const purchaseResponse = await CartsService.purchase(cid);
 
     if (purchaseResponse.error)
-      customError.create({code: enumErrors.ERROR_FROM_SERVER});
+      CustomError.create({code: enumErrors.ERROR_FROM_SERVER});
 
     return res.send(purchaseResponse);
   } catch (error) {

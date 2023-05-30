@@ -1,9 +1,12 @@
 export default class ClientUser {
-  constructor(User) {
-    this.first_name = User.first_name;
-    this.last_name = User.last_name;
-    this.full_name = `${User.first_name} ${User.last_name}`;
-    this.email = User.email;
-    this.age = User.age;
-  }
+  getCurrent(user) {
+    let dtoUser = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        full_name: `${user.first_name} ${user.last_name}`,
+        email: user.email,
+        role: user.role
+    }
+    return dtoUser;
+}
 }
